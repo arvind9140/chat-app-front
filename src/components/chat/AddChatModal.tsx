@@ -122,8 +122,14 @@ const AddChatModal: React.FC<{
     // Check if the modal/dialog is not open
     if (!open) return;
     // Fetch users if the modal/dialog is open
-    const desiredRole = user?.role
-    getUsers(desiredRole);
+   var desiredRole: string | undefined = user?.role;
+   if (desiredRole) {
+     getUsers(desiredRole);
+   } else {
+     // Handle the case where desiredRole is undefined
+     console.error("User role is undefined");
+   }
+    // getUsers(desiredRole);
     // The effect depends on the 'open' value. Whenever 'open' changes, the effect will re-run.
   }, [open]);
 

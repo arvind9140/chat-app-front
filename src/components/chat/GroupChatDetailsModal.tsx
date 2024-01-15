@@ -198,8 +198,14 @@ const GroupChatDetailsModal: React.FC<{
 
     // Fetch group information and users when the modal or component opens
     fetchGroupInformation();
-    const desiredRole = user?.role
-    getUsers(desiredRole);
+     const desiredRole: string | undefined = user?.role;
+     if (desiredRole) {
+       getUsers(desiredRole);
+     } else {
+       // Handle the case where desiredRole is undefined
+       console.error("User role is undefined");
+     }
+    // getUsers(desiredRole);
   }, [open]); // The effect is dependent on the 'open' state or prop, so it re-runs whenever 'open' changes
 
   return (

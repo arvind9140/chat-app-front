@@ -9,12 +9,16 @@ import { LocalStorage, requestHandler } from "../utils";
 const AuthContext = createContext<{
   user: UserInterface | null;
   token: string | null;
-  login: (data: { username: string; password: string }) => Promise<void>;
+  login: (data: {
+    username: string;
+    password: string;
+    role: string;
+  }) => Promise<void>;
   register: (data: {
     email: string;
     username: string;
     password: string;
-    role:string;
+    role: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
 }>({
@@ -39,7 +43,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const navigate = useNavigate();
 
   // Function to handle user login
-  const login = async (data: { username: string; password: string;role:string }) => {
+  const login = async (data: { username: string; password: string; role:string }) => {
     await requestHandler(
       async () => await loginUser(data),
       setIsLoading,

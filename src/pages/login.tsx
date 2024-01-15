@@ -11,6 +11,7 @@ const Login = () => {
   const [data, setData] = useState({
     username: "",
     password: "",
+    role:""
   });
 
   // Accessing the login function from the AuthContext
