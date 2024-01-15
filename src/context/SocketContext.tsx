@@ -8,7 +8,7 @@ const getSocket = () => {
   const token = LocalStorage.get("token"); // Retrieve jwt token from local storage or cookie
 
   // Create a socket connection with the provided URI and authentication
-  return socketio("http://localhost:8080", {
+  return socketio("https://back-owa1.onrender.com/", {
     withCredentials: true,
     auth: { token },
     transports: ["websocket"],
