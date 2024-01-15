@@ -25,6 +25,13 @@ const Login = () => {
         [name]: e.target.value,
       });
     };
+     const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+       // Update the role field in the data state
+       setData({
+         ...data,
+         role: e.target.value,
+       });
+     };
 
   // Function to handle the login process
   const handleLogin = async () => await login(data);
@@ -37,18 +44,34 @@ const Login = () => {
           <LockClosedIcon className="h-8 w-8 mb-2" /> Login
         </h1>
         {/* Input for entering the username */}
-        <Input className="bg-[#FFFAFA] text-dark placeholder:text-dark"
+        <Input
+          className="bg-[#FFFAFA] text-dark placeholder:text-dark"
           placeholder="Enter the username..."
           value={data.username}
           onChange={handleDataChange("username")}
         />
         {/* Input for entering the password */}
-        <Input className="bg-[#FFFAFA] text-dark placeholder:text-dark"
+        <Input
+          className="bg-[#FFFAFA] text-dark placeholder:text-dark"
           placeholder="Enter the password..."
           type="password"
           value={data.password}
           onChange={handleDataChange("password")}
         />
+        <select
+          className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-4 px-5 bg-[#FFFAFA] text-dark placeholder:text-dark"
+          onChange={handleRoleChange}
+          value={data.role}
+        >
+          <option value="">Select a role</option>
+          <option value="ADMIN">Admin</option>
+          <option value="CLIENT">Client</option>
+          <option value="DESIGNER">Designer</option>
+          <option value="SUPERVISER">Supervisor</option>
+          <option value="VISUALIZER">3D Visualizer</option>
+
+          {/* Add more roles as needed */}
+        </select>
         {/* Button to initiate the login process */}
         <Button
           disabled={Object.values(data).some((val) => !val)}
