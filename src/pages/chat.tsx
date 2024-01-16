@@ -59,6 +59,8 @@ const ChatPage = () => {
   const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
     []
   ); // To track unread messages
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+
 
   const [isTyping, setIsTyping] = useState(false); // To track if someone is currently typing
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
@@ -237,7 +239,8 @@ const ChatPage = () => {
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
       setUnreadMessages((prev) => [message, ...prev]);
-      window.location.reload();
+     
+      // window.location.reload();
     } else {
       // If it belongs to the current chat, update the messages list for the active chat
       setMessages((prev) => [message, ...prev]);
@@ -246,7 +249,7 @@ const ChatPage = () => {
     // Update the last message for the chat to which the received message belongs
     updateChatLastMessage(message.chat || "", message);
 
-     window.location.reload();
+    //  window.location.reload();
   };
 
   const onNewChat = (chat: ChatListItemInterface) => {
@@ -367,9 +370,9 @@ const ChatPage = () => {
         }}
       />
 
-      <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
-        <div className="w-1/3 relative ring-white overflow-y-auto px-4">
-          <div className="z-10 w-full sticky top-0   py-4 flex justify-between items-center gap-4">
+      <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0 overflow-none">
+        <div className="w-1/3 relative ring-white overflow-y-auto px-4 ">
+          <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 px-8 flex justify-between items-center  bg-[#FFFAFA] shadow-lg">
             <Input
               placeholder="Search user or group..."
               value={localSearchQuery}
@@ -435,11 +438,11 @@ const ChatPage = () => {
               })
           )}
         </div>
-        <div className="w-2/3 border-md-[0.1px] border-secondary">
+        <div className="w-2/3 border-md-[0.1px] border-secondary ">
           {currentChat.current && currentChat.current?._id ? (
             <>
-              <div className="p-4 sticky top-0 bg-[#FFFAFA] shadow-lg z-20 flex justify-between items-center w-full border-md-[0.1px] border-secondary text-dark">
-                <div className="flex justify-start items-center w-max gap-3">
+              <div className="p-4 sticky top-0 bg-[#FFFAFA] shadow-lg z-20 flex justify-between items-center w-full border-md-[0.1px] border-secondary text-dark ">
+                <div className="flex justify-start items-center w-full gap-3">
                   {currentChat.current.isGroupChat ? (
                     <div className="w-12 relative h-12 flex-shrink-0 flex justify-start items-center flex-nowrap">
                       {currentChat.current.participants
@@ -475,7 +478,7 @@ const ChatPage = () => {
                     <p className="font-bold">
                       {getChatObjectMetadata(currentChat.current, user!).title}
                     </p>
-                    <small className="text-white-400">
+                    <small className="text-zinc-400">
                       {
                         getChatObjectMetadata(currentChat.current, user!)
                           .description
@@ -486,7 +489,7 @@ const ChatPage = () => {
               </div>
               <div
                 className={classNames(
-                  "p-8 overflow-y-auto flex flex-col-reverse gap-6 w-full",
+                  "p-8 overflow-y-auto flex flex-col-reverse gap-6 ",
                   attachedFiles.length > 0
                     ? "h-[calc(100vh-336px)]"
                     : "h-[calc(100vh-176px)]"
@@ -559,7 +562,7 @@ const ChatPage = () => {
                 />
                 <label
                   htmlFor="attachments"
-                  className="p-4 rounded-full bg-gradient-to-tr from-indigo-200 to-indigo-100  shadow-xxl"
+                  className="p-4 rounded-full bg-gradient-to-tr from-indigo-200 to-indigo-100  shadow-xl"
                 >
                   <PaperClipIcon className="w-6 h-6" />
                 </label>

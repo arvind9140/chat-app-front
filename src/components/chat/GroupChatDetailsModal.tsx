@@ -338,7 +338,7 @@ const GroupChatDetailsModal: React.FC<{
                                           ) : null}
                                         </p>
                                         <small className="text-zinc-400">
-                                          {part.email}
+                                          {part.role}
                                         </small>
                                       </div>
                                     </div>

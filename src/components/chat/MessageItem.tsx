@@ -44,17 +44,20 @@ const MessageItem: React.FC<{
           )}
         />
         <div
-          className={classNames(
-            "p-4 rounded-3xl flex flex-col",
-            isOwnMessage
-              ? "order-1 rounded-br-none bg-gradient-to-tr from-indigo-200 to-indigo-100 shadow-lg  "
-              : "order-2 rounded-bl-none bg-[#F0F0F0] shadow-lg"
-          )}
+          
+  className={classNames(
+    "p-4 overflow-y-auto rounded-2xl flex flex-col",
+    isOwnMessage
+      ? "order-1 rounded-br-none bg-gradient-to-tr from-indigo-200 to-indigo-100 shadow-lg"
+      : "order-2 rounded-bl-none bg-[#F0F0F0] shadow-lg",
+    "break-words" // Use Tailwind's break-words class for word wrap
+  )}
+
         >
           {isGroupChatMessage && !isOwnMessage ? (
             <p
               className={classNames(
-                "text-bold font-semibold mb-2 ",
+                " text-bold font-semibold",
                 ["text-dark", "text-dark"][message.sender.username.length % 2]
               )}
             >
@@ -95,7 +98,7 @@ const MessageItem: React.FC<{
                       </a>
                     </button>
                     <img
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover "
                       src={file.url}
                       alt="msg_img"
                     />
@@ -112,8 +115,8 @@ const MessageItem: React.FC<{
           ) : null}
           <p
             className={classNames(
-              "mt-1.5 self-end text-[10px] inline-flex items-center ",
-              isOwnMessage ? "text-[#212A3E]" : "text-[#212A3E]"
+              "mt-0.5 self-end text-[10px] inline-flexflex-col items-center ",
+              isOwnMessage ? "text-[#212A3E] " : "text-[#212A3E]"
             )}
           >
             {message.attachments?.length > 0 ? (

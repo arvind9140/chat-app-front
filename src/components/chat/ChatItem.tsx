@@ -18,7 +18,15 @@ const ChatItem: React.FC<{
   isActive?: boolean;
   unreadCount?: number;
   onChatDelete: (chatId: string) => void;
-}> = ({ chat, onClick, isActive, unreadCount = 0, onChatDelete }) => {
+  
+}> = ({
+  chat,
+  onClick,
+  isActive,
+  unreadCount = 0,
+  onChatDelete,
+  
+}) => {
   const { user } = useAuth();
   const [openOptions, setOpenOptions] = useState(false);
   const [openGroupInfo, setOpenGroupInfo] = useState(false);
@@ -53,7 +61,10 @@ const ChatItem: React.FC<{
       />
       <div
         role="button"
-        onClick={() => onClick(chat)}
+        onClick={() => {
+          onClick(chat);
+          // Reset unread count when the chat is clicked
+        }}
         onMouseLeave={() => setOpenOptions(false)}
         className={classNames(
           "group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer shadow-md bg-[#FFFAFA] rounded-3xl hover:bg-gradient-to-tr from-indigo-200 to-indigo-100 text-[#212A3E] ",
@@ -61,7 +72,7 @@ const ChatItem: React.FC<{
             ? "border-[1px] border-zinc-500 bg-gradient-to-tr from-indigo-200 to-indigo-100 text-[#212A3E]  font-bold"
             : "",
           unreadCount > 0
-            ? "border-[1px] border-success bg-success/20 font-bold "
+            ? ""
             : ""
         )}
       >
@@ -159,11 +170,18 @@ const ChatItem: React.FC<{
           </small>
 
           {/* Unread count will be > 0 when user is on another chat and there is new message in a chat which is not currently active on user's screen */}
-          {unreadCount <= 0 ? null : (
+          {/* {unreadCount <= 0 ? null : (
             <span className="bg-success h-2 w-2 aspect-square flex-shrink-0 p-2 text-white text-xs rounded-full inline-flex justify-center items-center">
-              {unreadCount > 1 ? "1+" : unreadCount}
+              {unreadCount > 1 ? "9+" : unreadCount}
             </span>
-          )}
+          )} */}
+          <div className="relative">
+            {unreadCount > 0 && (
+              <div className="absolute top-0 right-0 bg-[#D6322D] text-white rounded-full px-2">
+                {unreadCount}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
