@@ -404,7 +404,7 @@ const ChatPage = () => {
               ></SidebarItem>
             </Link>
 
-            <Link to="https:/colonelz-frontend.vercel.app/inventory">
+            <Link to="https://colonelz-frontend.vercel.app/inventory">
               <SidebarItem
                 icon={<Warehouse />}
                 text="Inventory"
@@ -412,7 +412,7 @@ const ChatPage = () => {
               ></SidebarItem>
             </Link>
 
-            <Link to="https:/colonelz-frontend.vercel.app/mom">
+            <Link to="https://colonelz-frontend.vercel.app/mom">
               <SidebarItem
                 icon={<Timer />}
                 text="MOM"
@@ -420,7 +420,7 @@ const ChatPage = () => {
               ></SidebarItem>
             </Link>
 
-            <Link to="https:/colonelz-frontend.vercel.app/lead">
+            <Link to="https://colonelz-frontend.vercel.app/lead">
               <SidebarItem
                 icon={<Users />}
                 text="Lead Management"
