@@ -59,7 +59,7 @@ const ChatPage = () => {
   const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
     []
   ); // To track unread messages
-  const [unreadCount, setUnreadCount] = useState<number>(0);
+  // const [unreadCount, setUnreadCount] = useState<number>(0);
 
 
   const [isTyping, setIsTyping] = useState(false); // To track if someone is currently typing
