@@ -22,6 +22,19 @@ import {
   getChatObjectMetadata,
   requestHandler,
 } from "../utils";
+import Sidebar from "./Sides";
+import { SidebarItem } from "./Sides";
+import { Link } from "react-router-dom";
+import {
+  LayoutDashboardIcon,
+  LayoutList,
+  MessageCircleCode,
+  Timer,
+  Users,
+  Warehouse,
+} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -60,7 +73,6 @@ const ChatPage = () => {
     []
   ); // To track unread messages
   // const [unreadCount, setUnreadCount] = useState<number>(0);
-
 
   const [isTyping, setIsTyping] = useState(false); // To track if someone is currently typing
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
@@ -239,7 +251,7 @@ const ChatPage = () => {
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
       setUnreadMessages((prev) => [message, ...prev]);
-     
+
       // window.location.reload();
     } else {
       // If it belongs to the current chat, update the messages list for the active chat
@@ -357,7 +369,10 @@ const ChatPage = () => {
     // So, even if some socket callbacks are updating the `chats` state, it's not
     // updating on each `useEffect` call but on each socket call.
   }, [socket, chats]);
-
+  const [expanded, setexpanded] = useState(true);
+  const sidebar = () => {
+    setexpanded(!expanded);
+  };
   return (
     <>
       <AddChatModal
@@ -371,18 +386,77 @@ const ChatPage = () => {
       />
 
       <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0 overflow-none">
-        <div className="w-1/3 relative ring-white overflow-y-auto px-4 ">
+        <div className={`${expanded ? "w-[17%]" : " hidden"}`}>
+          <Sidebar>
+            <Link to="https://colonelz-frontend.vercel.app/">
+              <SidebarItem
+                icon={<LayoutDashboardIcon />}
+                text="Dashboard"
+                active={false}
+              ></SidebarItem>
+            </Link>
+
+            <Link to="https://colonelz-frontend.vercel.app/project">
+              <SidebarItem
+                icon={<LayoutList />}
+                text="All Projects"
+                active={false}
+              ></SidebarItem>
+            </Link>
+
+            <Link to="https:/colonelz-frontend.vercel.app/inventory">
+              <SidebarItem
+                icon={<Warehouse />}
+                text="Inventory"
+                active={false}
+              ></SidebarItem>
+            </Link>
+
+            <Link to="https:/colonelz-frontend.vercel.app/mom">
+              <SidebarItem
+                icon={<Timer />}
+                text="MOM"
+                active={false}
+              ></SidebarItem>
+            </Link>
+
+            <Link to="https:/colonelz-frontend.vercel.app/lead">
+              <SidebarItem
+                icon={<Users />}
+                text="Lead Management"
+                active={false}
+              ></SidebarItem>
+            </Link>
+
+            <Link to="https://master.d1iuo6abnc6erf.amplifyapp.com/chat">
+              <SidebarItem
+                icon={<MessageCircleCode />}
+                text="Chat"
+                active={true}
+              ></SidebarItem>
+            </Link>
+          </Sidebar>
+        </div>
+        <div
+          className={`relative ring-white overflow-y-auto px-4 ${
+            expanded ? "w-3/12" : "w-1/3"
+          }`}
+        >
           <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 px-8 flex justify-between items-center  bg-[#FFFAFA] shadow-lg">
+            <button onClick={sidebar}>
+              <FontAwesomeIcon icon={faBars} className=" w-7 text-2xl " />
+            </button>
             <Input
               placeholder="Search user or group..."
               value={localSearchQuery}
               onChange={(e) =>
                 setLocalSearchQuery(e.target.value.toLowerCase())
               }
+              className="ml-2"
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-gradient-to-tr from-indigo-200 to-indigo-100 text-[#212A3E] py-4 px-5 flex flex-shrink-0"
+              className="rounded-xl border-none bg-gradient-to-tr from-indigo-200 to-indigo-100 text-[#212A3E] py-3 px-3 ml-3 flex flex-shrink-0"
             >
               + Add chat
             </button>
@@ -438,7 +512,11 @@ const ChatPage = () => {
               })
           )}
         </div>
-        <div className="w-2/3 border-md-[0.1px] border-secondary ">
+        <div
+          className={`${
+            expanded ? "w-7/12" : "w-2/3"
+          } border-md-[0.1px] border-secondary`}
+        >
           {currentChat.current && currentChat.current?._id ? (
             <>
               <div className="p-4 sticky top-0 bg-[#FFFAFA] shadow-lg z-20 flex justify-between items-center w-full border-md-[0.1px] border-secondary text-dark ">
