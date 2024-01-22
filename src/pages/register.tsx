@@ -1,15 +1,11 @@
-// Import necessary components and hooks
 import { LockClosedIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { useAuth } from "../context/AuthContext";
-import Sidebar, { SidebarItem } from "./Sides";
 import { Link } from "react-router-dom";
 import {
-  LayoutDashboardIcon,
   LayoutList,
-  MessageCircleCode,
   Timer,
   Users,
   Warehouse,
@@ -22,7 +18,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
 import photo from './logo.png'
 import { Card,CardContent } from "@mui/material";
-import { LayoutDashboard,  Menu, MessageCircleCodeIcon} from "lucide-react";
+import { LayoutDashboard, MessageCircleCodeIcon} from "lucide-react";
  
 // Component for user registration
 const Register = () => {
@@ -108,7 +104,7 @@ const Register = () => {
   );
  
   return (
-   
+ 
     <div className="h-[100vh] bg-[rgb(241 245 249)]">
     <div>
         <Box sx={{ display: "flex" }}>
