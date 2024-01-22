@@ -22,20 +22,15 @@ import {
   getChatObjectMetadata,
   requestHandler,
 } from "../utils";
-import Sidebar from "./Sides";
-import { SidebarItem } from "./Sides";
+ 
+import React from "react";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";  
+import Drawer from "@mui/material/Drawer";
+import photo from './logo.png'
 import { Link } from "react-router-dom";
-import {
-  LayoutDashboardIcon,
-  LayoutList,
-  MessageCircleCode,
-  Timer,
-  Users,
-  Warehouse,
-} from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-
+import { Card,CardContent } from "@mui/material";
+import { LayoutDashboard, LayoutList, Menu, MessageCircleCodeIcon, Timer, Users, Warehouse} from "lucide-react";
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
 const JOIN_CHAT_EVENT = "joinChat";
@@ -46,42 +41,42 @@ const MESSAGE_RECEIVED_EVENT = "messageReceived";
 const LEAVE_CHAT_EVENT = "leaveChat";
 const UPDATE_GROUP_NAME_EVENT = "updateGroupName";
 // const SOCKET_ERROR_EVENT = "socketError";
-
+ 
 const ChatPage = () => {
   // Import the 'useAuth' and 'useSocket' hooks from their respective contexts
   const { user } = useAuth();
   const { socket } = useSocket();
-
+ 
   // Create a reference using 'useRef' to hold the currently selected chat.
   // 'useRef' is used here because it ensures that the 'currentChat' value within socket event callbacks
   // will always refer to the latest value, even if the component re-renders.
   const currentChat = useRef<ChatListItemInterface | null>(null);
-
+ 
   // To keep track of the setTimeout function
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
+ 
   // Define state variables and their initial values using 'useState'
   const [isConnected, setIsConnected] = useState(false); // For tracking socket connection
-
+ 
   const [openAddChat, setOpenAddChat] = useState(false); // To control the 'Add Chat' modal
   const [loadingChats, setLoadingChats] = useState(false); // To indicate loading of chats
   const [loadingMessages, setLoadingMessages] = useState(false); // To indicate loading of messages
-
+ 
   const [chats, setChats] = useState<ChatListItemInterface[]>([]); // To store user's chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
   const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
     []
   ); // To track unread messages
   // const [unreadCount, setUnreadCount] = useState<number>(0);
-
+ 
   const [isTyping, setIsTyping] = useState(false); // To track if someone is currently typing
   const [selfTyping, setSelfTyping] = useState(false); // To track if the current user is typing
-
+ 
   const [message, setMessage] = useState(""); // To store the currently typed message
   const [localSearchQuery, setLocalSearchQuery] = useState(""); // For local search functionality
-
+ 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
-
+ 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
    */
@@ -91,20 +86,20 @@ const ChatPage = () => {
   ) => {
     // Search for the chat with the given ID in the chats array
     const chatToUpdate = chats.find((chat) => chat._id === chatToUpdateId)!;
-
+ 
     // Update the 'lastMessage' field of the found chat with the new message
     chatToUpdate.lastMessage = message;
-
+ 
     // Update the 'updatedAt' field of the chat with the 'updatedAt' field from the message
     chatToUpdate.updatedAt = message?.updatedAt;
-
+ 
     // Update the state of chats, placing the updated chat at the beginning of the array
     setChats([
       chatToUpdate, // Place the updated chat first
       ...chats.filter((chat) => chat._id !== chatToUpdateId), // Include all other chats except the updated one
     ]);
   };
-
+ 
   const getChats = async () => {
     requestHandler(
       async () => await getUserChats(),
@@ -116,22 +111,22 @@ const ChatPage = () => {
       alert
     );
   };
-
+ 
   const getMessages = async () => {
     // Check if a chat is selected, if not, show an alert
     if (!currentChat.current?._id) return alert("No chat is selected");
-
+ 
     // Check if socket is available, if not, show an alert
     if (!socket) return alert("Socket not available");
-
+ 
     // Emit an event to join the current chat
     socket.emit(JOIN_CHAT_EVENT, currentChat.current?._id);
-
+ 
     // Filter out unread messages from the current chat as those will be read
     setUnreadMessages(
       unreadMessages.filter((msg) => msg.chat !== currentChat.current?._id)
     );
-
+ 
     // Make an async request to fetch chat messages for the current chat
     requestHandler(
       // Fetching messages for the current chat
@@ -147,15 +142,15 @@ const ChatPage = () => {
       alert
     );
   };
-
+ 
   // Function to send a chat message
   const sendChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
     if (!currentChat.current?._id || !socket) return;
-
+ 
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
-
+ 
     // Use the requestHandler to send the message and handle potential response or error
     await requestHandler(
       // Try to send the chat message with the given message and attached files
@@ -173,76 +168,76 @@ const ChatPage = () => {
         setMessages((prev) => [res.data, ...prev]); // Update messages in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data); // Update the last message in the chat
       },
-
+ 
       // If there's an error during the message sending process, raise an alert
       alert
     );
   };
-
+ 
   const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Update the message state with the current input value
     setMessage(e.target.value);
-
+ 
     // If socket doesn't exist or isn't connected, exit the function
     if (!socket || !isConnected) return;
-
+ 
     // Check if the user isn't already set as typing
     if (!selfTyping) {
       // Set the user as typing
       setSelfTyping(true);
-
+ 
       // Emit a typing event to the server for the current chat
       socket.emit(TYPING_EVENT, currentChat.current?._id);
     }
-
+ 
     // Clear the previous timeout (if exists) to avoid multiple setTimeouts from running
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-
+ 
     // Define a length of time (in milliseconds) for the typing timeout
     const timerLength = 3000;
-
+ 
     // Set a timeout to stop the typing indication after the timerLength has passed
     typingTimeoutRef.current = setTimeout(() => {
       // Emit a stop typing event to the server for the current chat
       socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
-
+ 
       // Reset the user's typing state
       setSelfTyping(false);
     }, timerLength);
   };
-
+ 
   const onConnect = () => {
     setIsConnected(true);
   };
-
+ 
   const onDisconnect = () => {
     setIsConnected(false);
   };
-
+ 
   /**
    * Handles the "typing" event on the socket.
    */
   const handleOnSocketTyping = (chatId: string) => {
     // Check if the typing event is for the currently active chat.
     if (chatId !== currentChat.current?._id) return;
-
+ 
     // Set the typing state to true for the current chat.
     setIsTyping(true);
   };
-
+ 
   /**
    * Handles the "stop typing" event on the socket.
    */
   const handleOnSocketStopTyping = (chatId: string) => {
     // Check if the stop typing event is for the currently active chat.
     if (chatId !== currentChat.current?._id) return;
-
+ 
     // Set the typing state to false for the current chat.
     setIsTyping(false);
   };
-
+ 
   /**
    * Handles the event when a new message is received.
    */
@@ -251,23 +246,23 @@ const ChatPage = () => {
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
       setUnreadMessages((prev) => [message, ...prev]);
-
+ 
       // window.location.reload();
     } else {
       // If it belongs to the current chat, update the messages list for the active chat
       setMessages((prev) => [message, ...prev]);
     }
-
+ 
     // Update the last message for the chat to which the received message belongs
     updateChatLastMessage(message.chat || "", message);
-
+ 
     //  window.location.reload();
   };
-
+ 
   const onNewChat = (chat: ChatListItemInterface) => {
     setChats((prev) => [chat, ...prev]);
   };
-
+ 
   // This function handles the event when a user leaves a chat.
   const onChatLeave = (chat: ChatListItemInterface) => {
     // Check if the chat the user is leaving is the current active chat.
@@ -280,18 +275,18 @@ const ChatPage = () => {
     // Update the chats by removing the chat that the user left.
     setChats((prev) => prev.filter((c) => c._id !== chat._id));
   };
-
+ 
   // Function to handle changes in group name
   const onGroupNameChange = (chat: ChatListItemInterface) => {
     // Check if the chat being changed is the currently active chat
     if (chat._id === currentChat.current?._id) {
       // Update the current chat with the new details
       currentChat.current = chat;
-
+ 
       // Save the updated chat details to local storage
       LocalStorage.set("currentChat", chat);
     }
-
+ 
     // Update the list of chats with the new chat details
     setChats((prev) => [
       // Map through the previous chats
@@ -305,14 +300,14 @@ const ChatPage = () => {
       }),
     ]);
   };
-
+ 
   useEffect(() => {
     // Fetch the chat list from the server.
     getChats();
-
+ 
     // Retrieve the current chat details from local storage.
     const _currentChat = LocalStorage.get("currentChat");
-
+ 
     // If there's a current chat saved in local storage:
     if (_currentChat) {
       // Set the current chat reference to the one from local storage.
@@ -324,12 +319,12 @@ const ChatPage = () => {
     }
     // An empty dependency array ensures this useEffect runs only once, similar to componentDidMount.
   }, []);
-
+ 
   // This useEffect handles the setting up and tearing down of socket event listeners.
   useEffect(() => {
     // If the socket isn't initialized, we don't set up listeners.
     if (!socket) return;
-
+ 
     // Set up event listeners for various socket events:
     // Listener for when the socket connects.
     socket.on(CONNECTED_EVENT, onConnect);
@@ -347,7 +342,7 @@ const ChatPage = () => {
     socket.on(LEAVE_CHAT_EVENT, onChatLeave);
     // Listener for when a group's name is updated.
     socket.on(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);
-
+ 
     // When the component using this hook unmounts or if `socket` or `chats` change:
     return () => {
       // Remove all the event listeners we set up to avoid memory leaks and unintended behaviors.
@@ -360,7 +355,7 @@ const ChatPage = () => {
       socket.off(LEAVE_CHAT_EVENT, onChatLeave);
       socket.off(UPDATE_GROUP_NAME_EVENT, onGroupNameChange);
     };
-
+ 
     // Note:
     // The `chats` array is used in the `onMessageReceived` function.
     // We need the latest state value of `chats`. If we don't pass `chats` in the dependency array,
@@ -369,12 +364,114 @@ const ChatPage = () => {
     // So, even if some socket callbacks are updating the `chats` state, it's not
     // updating on each `useEffect` call but on each socket call.
   }, [socket, chats]);
-  const [expanded, setexpanded] = useState(true);
-  const sidebar = () => {
-    setexpanded(!expanded);
-  };
+ 
+ 
+ 
+  const drawWidth = 280;
+ 
+ 
+    const [mobileViewOpen, setMobileViewOpen] = useState<boolean>(false);
+ 
+    const handleToggle = (): void => {
+        setMobileViewOpen(!mobileViewOpen);
+    };
+ 
+    const responsiveDrawer = (
+      <div style={{ backgroundColor: "#FFFFFF",
+        height: "100%",fontFamily:"'Nunito Sans', sans-serif", }}>
+        <div className="mt-5 px-7">
+            <img src={photo} className='w-[22%] ml-[15%]' alt="" />
+          <span>
+            <h1 className=' font-bold text-red-600 border-b-2 w-28 text-lg border-red-200 ml-[5%]'>COLONELZ</h1>
+            <p className=' text-xs font-semibold ml-[5%]'>BUILDING RELATIONSHIPS</p>
+          </span>
+          </div>
+          <div className=" pr-10 pl-4 text-medium mt-[10%] font-semibold">
+            <Link to="https://colonelz.vercel.app/">
+              <button className=" font-['Nunito Sans', sans-serif] w-[100%]  flex  py-[9px] px-6 rounded-md">
+              <LayoutDashboard/><h2 className="ml-3">Dashboard</h2></button>
+            </Link>
+            <Link to="https://colonelz.vercel.app/project">
+              <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+              <LayoutList/><h2 className="ml-3">All Projects</h2></button>
+            </Link>
+            <Link to="https://colonelz.vercel.app/inventory">
+              <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+              <Warehouse/><h2 className="ml-3">Inventory</h2></button>
+            </Link>
+            <Link to="https://colonelz.vercel.app/mom">
+              <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+              <Timer/><h2 className="ml-3">MOM</h2></button>
+            </Link>
+            <Link to="https://colonelz.vercel.app/lead">
+              <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+              <Users/><h2 className="ml-3">Lead Management</h2></button>
+            </Link>
+            <Link to="/chat">
+              <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800 py-[9px] px-6 rounded-md">
+              <MessageCircleCodeIcon/><h2 className="ml-3">Chat</h2></button>
+            </Link>
+          </div>
+   
+      </div>
+    );
   return (
-    <>
+        <div className="h-[100vh] bg-[rgb(241 245 249)]">
+            <div>
+                <Box sx={{ display: "flex" }}>
+                    <CssBaseline />
+ 
+         
+                    <Box
+                        component="nav"
+                        sx={{
+                            width: { sm: drawWidth },
+                            flexShrink: { sm: 0 }
+                        }}
+                    >
+                        <Drawer
+                            variant="temporary"
+                            open={mobileViewOpen}
+                            onClose={handleToggle}
+                            ModalProps={{
+                                keepMounted: true,
+                            }}
+                            sx={{
+                                display: { xs: "block", sm: "none" },
+                                "& .MuiDrawer-paper": {
+                                    boxSizing: "border-box",
+                                    width: drawWidth,
+                                    boxShadow: 1
+                                },
+                            }}
+                        >
+                            {responsiveDrawer}
+                        </Drawer>
+                        <Drawer
+                            variant="permanent"
+                            sx={{
+                                display: { xs: "none", sm: "block" },
+                                "& .MuiDrawer-paper": {
+                                    boxSizing: "border-box",
+                                    width: drawWidth,
+                                },
+                            }}
+                            open
+                        >
+                            {responsiveDrawer}
+                        </Drawer>
+                    </Box>
+                    <Box
+                        component="main"
+                        sx={{
+                            flexGrow: 1,
+                           
+                            width: { sm: `calc(100% - ${drawWidth}px)` },
+                        }}
+                    >
+                        <Card sx={{ minWidth: 275, overflow: "auto" }}>
+                            <CardContent>
+                            <>
       <AddChatModal
         open={openAddChat}
         onClose={() => {
@@ -384,67 +481,17 @@ const ChatPage = () => {
           getChats();
         }}
       />
-
-      <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0 overflow-none">
-        <div className={`${expanded ? "w-[17%]" : " hidden"}`}>
-          <Sidebar>
-            <Link to="https://colonelz-frontend.vercel.app/">
-              <SidebarItem
-                icon={<LayoutDashboardIcon />}
-                text="Dashboard"
-                active={false}
-              ></SidebarItem>
-            </Link>
-
-            <Link to="https://colonelz-frontend.vercel.app/project">
-              <SidebarItem
-                icon={<LayoutList />}
-                text="All Projects"
-                active={false}
-              ></SidebarItem>
-            </Link>
-
-            <Link to="https://colonelz-frontend.vercel.app/inventory">
-              <SidebarItem
-                icon={<Warehouse />}
-                text="Inventory"
-                active={false}
-              ></SidebarItem>
-            </Link>
-
-            <Link to="https://colonelz-frontend.vercel.app/mom">
-              <SidebarItem
-                icon={<Timer />}
-                text="MOM"
-                active={false}
-              ></SidebarItem>
-            </Link>
-
-            <Link to="https://colonelz-frontend.vercel.app/lead">
-              <SidebarItem
-                icon={<Users />}
-                text="Lead Management"
-                active={false}
-              ></SidebarItem>
-            </Link>
-
-            <Link to="https://master.d1iuo6abnc6erf.amplifyapp.com/chat">
-              <SidebarItem
-                icon={<MessageCircleCode />}
-                text="Chat"
-                active={true}
-              ></SidebarItem>
-            </Link>
-          </Sidebar>
+ 
+      <div className="w-full  items-stretch h-screen flex flex-shrink-0 overflow-none">
+        <div className={``}>
+ 
         </div>
         <div
-          className={`relative ring-white overflow-y-auto px-4 ${
-            expanded ? "w-3/12" : "w-1/3"
-          }`}
+          className={`relative ring-white overflow-y-auto px-4 w-[36%] `}
         >
-          <div className="z-10 w-full sticky top-0 flex justify-between items-center py-3 px-8 flex justify-between items-center  bg-[#FFFAFA] shadow-lg">
-            <button onClick={sidebar}>
-              <FontAwesomeIcon icon={faBars} className=" w-7 text-2xl " />
+          <div className="z-10 w-full top-0 flex items-center px-2  bg-[#FFFAFA] shadow-lg h-[13%] rounded-sm">
+            <button className=" text-black w-1/3 ml-[2%]" onClick={handleToggle}>
+                  <Menu/>
             </button>
             <Input
               placeholder="Search user or group..."
@@ -452,11 +499,11 @@ const ChatPage = () => {
               onChange={(e) =>
                 setLocalSearchQuery(e.target.value.toLowerCase())
               }
-              className="ml-2"
+              className="ml-2 w-1/3]"
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-gradient-to-tr from-indigo-200 to-indigo-100 text-[#212A3E] py-3 px-3 ml-3 flex flex-shrink-0"
+              className="  w-1/3 rounded-xl border-none bg-gradient-to-tr from-indigo-200 to-indigo-100 text-[#212A3E] py-3 px-3 ml-3 flex flex-shrink-0"
             >
               + Add chat
             </button>
@@ -513,9 +560,7 @@ const ChatPage = () => {
           )}
         </div>
         <div
-          className={`${
-            expanded ? "w-7/12" : "w-2/3"
-          } border-md-[0.1px] border-secondary`}
+          className={` border-md-[0.1px] border-secondary w-2/3`}
         >
           {currentChat.current && currentChat.current?._id ? (
             <>
@@ -644,7 +689,7 @@ const ChatPage = () => {
                 >
                   <PaperClipIcon className="w-6 h-6" />
                 </label>
-
+ 
                 <Input
                   placeholder="Message"
                   value={message}
@@ -672,7 +717,16 @@ const ChatPage = () => {
         </div>
       </div>
     </>
-  );
-};
-
+                             
+                            </CardContent>
+                        </Card>
+                    </Box>
+                </Box>
+            </div>
+        </div>
+    );
+}
+ 
+ 
+ 
 export default ChatPage;
