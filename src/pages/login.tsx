@@ -5,13 +5,8 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
-import { SidebarItem } from "./Sides";
-import Sidebar from "./Sides";
 import {
-  LayoutDashboardIcon,
   LayoutList,
-  MenuIcon,
-  MessageCircleCode,
   Timer,
   Users,
   Warehouse,
@@ -23,7 +18,7 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";  
 import Drawer from "@mui/material/Drawer";
 import photo from './logo.png'
-import { AppBar, Card,CardContent, Menu, Toolbar } from "@mui/material";
+import {  Card,CardContent } from "@mui/material";
 import { LayoutDashboard, MessageCircleCodeIcon} from "lucide-react";
  
 // Component for the Login page
