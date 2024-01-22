@@ -14,7 +14,16 @@ import {
   Users,
   Warehouse,
 } from "lucide-react";
-
+ 
+ 
+import React from "react";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";  
+import Drawer from "@mui/material/Drawer";
+import photo from './logo.png'
+import { Card,CardContent } from "@mui/material";
+import { LayoutDashboard,  Menu, MessageCircleCodeIcon} from "lucide-react";
+ 
 // Component for user registration
 const Register = () => {
   // State to manage user registration data
@@ -24,10 +33,10 @@ const Register = () => {
     role: "",
     password: "",
   });
-
+ 
   // Access the register function from the authentication context
   const { register } = useAuth();
-
+ 
   // Handle data change for input fields
   const handleDataChange =
     (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,63 +53,120 @@ const Register = () => {
       role: e.target.value,
     });
   };
-
+ 
   // Handle user registration
   const handleRegister = async () => await register(data);
-
+ 
+ 
+  const drawWidth = 280;
+ 
+ 
+  const [mobileViewOpen, setMobileViewOpen] = useState<boolean>(false);
+ 
+  const handleToggle = (): void => {
+      setMobileViewOpen(!mobileViewOpen);
+  };
+ 
+  const responsiveDrawer = (
+    <div style={{ backgroundColor: "#FFFFFF",
+      height: "100%",fontFamily:"'Nunito Sans', sans-serif", }}>
+      <div className="mt-5 px-7">
+          <img src={photo} className='w-[22%] ml-[15%]' alt="" />
+        <span>
+          <h1 className=' font-bold text-red-600 border-b-2 w-28 text-lg border-red-200 ml-[5%]'>COLONELZ</h1>
+          <p className=' text-xs font-semibold ml-[5%]'>BUILDING RELATIONSHIPS</p>
+        </span>
+        </div>
+        <div className=" pr-10 pl-4 text-medium mt-[10%] font-semibold">
+          <Link to="https://colonelz.vercel.app/">
+            <button className=" font-['Nunito Sans', sans-serif] w-[100%]  flex  py-[9px] px-6 rounded-md">
+            <LayoutDashboard/><h2 className="ml-3">Dashboard</h2></button>
+          </Link>
+          <Link to="https://colonelz.vercel.app/project">
+            <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+            <LayoutList/><h2 className="ml-3">All Projects</h2></button>
+          </Link>
+          <Link to="https://colonelz.vercel.app/inventory">
+            <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+            <Warehouse/><h2 className="ml-3">Inventory</h2></button>
+          </Link>
+          <Link to="https://colonelz.vercel.app/mom">
+            <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+            <Timer/><h2 className="ml-3">MOM</h2></button>
+          </Link>
+          <Link to="https://colonelz.vercel.app/lead">
+            <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex  py-[9px] px-6 rounded-md">
+            <Users/><h2 className="ml-3">Lead Management</h2></button>
+          </Link>
+          <Link to="/chat">
+            <button className=" font-['Nunito Sans', sans-serif] w-[100%] mt-3  flex bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800 py-[9px] px-6 rounded-md">
+            <MessageCircleCodeIcon/><h2 className="ml-3">Chat</h2></button>
+          </Link>
+        </div>
+ 
+    </div>
+  );
+ 
   return (
-    // Register form UI
-    <div className=" flex justify-between">
-      <div className="w-[17%]">
-        <Sidebar>
-          <Link to="https://colonelz-frontend.vercel.app/">
-            <SidebarItem
-              icon={<LayoutDashboardIcon />}
-              text="Dashboard"
-              active={false}
-            ></SidebarItem>
-          </Link>
-
-          <Link to="https://colonelz-frontend.vercel.app/project">
-            <SidebarItem
-              icon={<LayoutList />}
-              text="All Projects"
-              active={false}
-            ></SidebarItem>
-          </Link>
-
-          <Link to="https://colonelz-frontend.vercel.app/inventory">
-            <SidebarItem
-              icon={<Warehouse />}
-              text="Inventory"
-              active={false}
-            ></SidebarItem>
-          </Link>
-
-          <Link to="https://colonelz-frontend.vercel.app/mom">
-            <SidebarItem
-              icon={<Timer />}
-              text="MOM"
-              active={false}
-            ></SidebarItem>
-          </Link>
-
-          <Link to="https://colonelz-frontend.vercel.app/lead">
-            <SidebarItem
-              icon={<Users />}
-              text="Lead Management"
-              active={false}
-            ></SidebarItem>
-          </Link>
-
-          <Link to="https://master.d1iuo6abnc6erf.amplifyapp.com/chat">
-            <SidebarItem
-              icon={<MessageCircleCode />}
-              text="Chat"
-              active={true}
-            ></SidebarItem>
-          </Link>
-        </Sidebar>
+   
+    <div className="h-[100vh] bg-[rgb(241 245 249)]">
+    <div>
+        <Box sx={{ display: "flex" }}>
+            <CssBaseline />
+ 
+ 
+            <Box
+                component="nav"
+                sx={{
+                    width: { sm: drawWidth },
+                    flexShrink: { sm: 0 }
+                }}
+            >
+                <Drawer
+                    variant="temporary"
+                    open={mobileViewOpen}
+                    onClose={handleToggle}
+                    ModalProps={{
+                        keepMounted: true,
+                    }}
+                    sx={{
+                        display: { xs: "block", sm: "none" },
+                        "& .MuiDrawer-paper": {
+                            boxSizing: "border-box",
+                            width: drawWidth,
+                            boxShadow: 1
+                        },
+                    }}
+                >
+                    {responsiveDrawer}
+                </Drawer>
+                <Drawer
+                    variant="permanent"
+                    sx={{
+                        display: { xs: "none", sm: "block" },
+                        "& .MuiDrawer-paper": {
+                            boxSizing: "border-box",
+                            width: drawWidth,
+                        },
+                    }}
+                    open
+                >
+                    {responsiveDrawer}
+                </Drawer>
+            </Box>
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
+                   
+                    width: { sm: `calc(100% - ${drawWidth}px)` },
+                }}
+            >
+                <Card sx={{ minWidth: 275, overflow: "auto" }}>
+                    <CardContent>
+                    <div className=" flex justify-between">
+      <div className="">
+     
       </div>
       <div className="flex justify-center items-center flex-col h-screen w-screen ">
         <h1 className="text-3xl font-bold">Chat App</h1>
@@ -130,7 +196,7 @@ const Register = () => {
             value={data.password}
             onChange={handleDataChange("password")}
           />
-
+ 
           <select
             className="block w-full rounded-xl outline outline-[1px] outline-zinc-400 border-0 py-4 px-5 bg-[#FFFAFA] text-dark placeholder:text-dark"
             onChange={handleRoleChange}
@@ -142,10 +208,10 @@ const Register = () => {
             <option value="DESIGNER">Designer</option>
             <option value="SUPERVISER">Supervisor</option>
             <option value="VISUALIZER">3D Visualizer</option>
-
+ 
             {/* Add more roles as needed */}
           </select>
-
+ 
           {/* Register button */}
           <Button
             fullWidth
@@ -164,7 +230,14 @@ const Register = () => {
         </div>
       </div>
     </div>
+                     
+                    </CardContent>
+                </Card>
+            </Box>
+        </Box>
+    </div>
+</div>
   );
 };
-
+ 
 export default Register;
